@@ -14,7 +14,7 @@ Open Claude Code and paste one line:
 Set up an AI vault for me: https://github.com/kub-ski/ai-vault
 ```
 
-Your AI downloads this, asks you a few questions (your name, what you do, which folders you want), fills in your files, and checks that the memory works. Details: [PROMPT.md](PROMPT.md). No sudo, no passwords, nothing leaves your computer.
+Your AI downloads this, asks you a few questions (your name, what you do, which folders you want), fills in your files, and checks that the memory works. Details: [PROMPT.md](PROMPT.md). No sudo, no passwords. Your notes stay as plain files on your computer.
 
 ## What is a vault, and why
 
@@ -51,12 +51,12 @@ Four small scripts in [`template/.claude/hooks/`](template/.claude/hooks/), wire
 
 | When | What happens |
 |---|---|
-| A session starts, resumes, or you type `/clear` | `session-start.sh` prints your identity, preferences, the active project's newest decision and its `state.md`. Claude reads it before your first message. |
+| A session starts, resumes, forks, or you type `/clear` | `session-start.sh` prints your identity, preferences, the active project's newest decision and its `state.md`. Claude reads it before your first message. |
 | Just before a long chat is compacted | `save-state.sh` writes a snapshot into `state.md`: your recent requests, the files changed, Claude's last message. |
 | Right after compaction | `post-compact.sh` puts the saved state back in front of Claude. |
 | A session ends | `save-state.sh` saves the snapshot again, so closing the window loses nothing. |
 
-Your own notes in `state.md` (Done, Next, Open questions) are never overwritten; only the block between two marker comments is. Every hook fails open: if it breaks, you just lose the automatic part, never your work. The hooks only read and write inside the vault and never use the network.
+Your own notes in `state.md` (Done, Next, Open questions) are never overwritten; only the block between two marker comments is. It keeps the last snapshot too, and a quick one-question session does not replace the snapshot of a real working session. Every hook fails open: if it breaks, you just lose the automatic part, never your work. The hooks write only inside the vault and never use the network (to save a snapshot they read the session transcript Claude Code keeps in `~/.claude/`).
 
 Two commands make the loop deliberate:
 
@@ -69,7 +69,7 @@ There is a third, `/new-project <name>`, that creates a project folder from the 
 
 ### Tested
 
-[`tests/test-memory-loop.sh`](tests/test-memory-loop.sh) runs 19 checks on a copy of the vault. A real Claude Code run (a change in one session, `/compact`, a brand-new session that knew the project and the last changed file, and a control run with the hooks switched off that did not) is written up in [docs/memory-test.md](docs/memory-test.md), including what it did not cover.
+[`tests/test-memory-loop.sh`](tests/test-memory-loop.sh) runs 22 checks on a copy of the vault. A real Claude Code run (a change in one session, `/compact`, a brand-new session that knew the project and the last changed file, and a control run with the hooks switched off that did not) is written up in [docs/memory-test.md](docs/memory-test.md), including what it did not cover.
 
 ## Setup in a few steps (by hand)
 
@@ -81,7 +81,7 @@ You need [Claude Code](https://docs.claude.com/en/docs/claude-code), `git` and `
 3. Open `~/my-vault/01-personal/identity.md` and fill it in (or let Claude interview you in your first session).
 4. `cd ~/my-vault && claude`, then type `/kickoff`.
 
-**Obsidian:** open the folder as a vault; in Settings, Files and links, turn off "Use [[Wikilinks]]". **iCloud Drive:** put the vault in iCloud Drive/my-vault; skip `--git` there, because a `.git` folder inside iCloud syncs badly. **Git:** `--git` keeps a local history only; add a remote yourself if you want a backup, and keep it private.
+**Obsidian:** open the folder as a vault; in Settings, Files and links, turn off "Use [[Wikilinks]]". **iCloud Drive:** put the vault in `~/Library/Mobile Documents/com~apple~CloudDocs/my-vault`; skip `--git` there, because a `.git` folder inside iCloud syncs badly. **Git:** `--git` keeps a local history only; add a remote yourself if you want a backup, and keep it private.
 
 ## Use it every day
 
@@ -92,7 +92,7 @@ You need [Claude Code](https://docs.claude.com/en/docs/claude-code), `git` and `
 
 ## FAQ
 
-**Does this send my notes anywhere?** No. It is files on your computer. Claude Code reads them the way it reads any project, under your own Claude account.
+**Does this send my notes anywhere?** The vault is files on your computer, and the kit adds no server and no account. But Claude Code itself is an Anthropic product: what it reads (including the memory the hooks load) is sent to Anthropic under your own Claude account, like any chat. Do not put anything in the vault you would not paste into Claude.
 
 **Can I put passwords in it?** No. The rules forbid it, and `/wrapup` runs a quick check for key-shaped text. Use a password manager.
 
@@ -100,7 +100,7 @@ You need [Claude Code](https://docs.claude.com/en/docs/claude-code), `git` and `
 
 **Can I use another AI?** The files are plain Markdown, so any AI can read them. The automatic hooks are for Claude Code.
 
-**What if a hook breaks?** Nothing stops. You lose the automatic save or load for that moment; run `bash tests/test-memory-loop.sh <your-vault>` to see which check fails.
+**What if a hook breaks?** Nothing stops. You lose the automatic save or load for that moment; from the kit folder run `bash tests/test-memory-loop.sh <your-vault>` to see which check fails.
 
 **Where is Claude Code's own memory?** The template tells Claude to ignore it and use the vault, so everything stays in files you can read, edit and back up.
 

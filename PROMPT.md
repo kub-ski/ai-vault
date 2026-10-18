@@ -17,9 +17,9 @@ I want an AI vault: a folder of notes my AI can read, with memory that saves and
 2. Ask me these questions, one at a time, and wait for each answer:
    a) What is your name, and what do you do (work, studies, a business)?
    b) Which areas of work or life should get a folder? (for example: a shop, a class, a hobby, a side project). Two or three is enough; I can add more later.
-   c) Where should the vault live? (default: ~/my-vault. If I use iCloud Drive, put it in iCloud Drive/my-vault.)
+   c) Where should the vault live? (default: ~/my-vault. If I want it in iCloud Drive, use ~/Library/Mobile Documents/com~apple~CloudDocs/my-vault.)
    d) Do I use Obsidian? (yes/no. If yes, tell me to open the folder as a vault, and to turn off "Use [[Wikilinks]]".)
-   e) Should I keep a git history of the vault? (yes/no, default yes. It stays on this computer.)
+   e) Should I keep a git history of the vault? (yes/no, default yes unless I chose iCloud Drive in c): git inside iCloud syncs badly, so then skip --git. It stays on this computer.)
    f) How do I like answers? (short or detailed, plain or formal, bullets or paragraphs)
 3. Run ./scripts/install.sh <the folder I chose> (add --git if I said yes). Read its output. If the self-test at the end says FAILED, read the message, fix the cause, and run it again in a new empty folder.
 4. Fill in <vault>/01-personal/identity.md and communication-prefs.md from my answers. Remove the "not filled in yet" note from identity.md. Create one folder in 02-work for each area I named, each with a one-line README.md, and add them to index.md.
