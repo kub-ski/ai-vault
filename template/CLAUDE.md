@@ -23,10 +23,13 @@ Anything that must survive past this conversation goes in a file here, never onl
 | Who the user is | `01-personal/identity.md` |
 | How they like to work | `01-personal/communication-prefs.md` |
 | Project status, next steps | that project's `state.md` |
+| What each past session did | that project's `session-log/` (written by hooks, append-only) |
 | Why we chose X | that project's `docs/decisions/` |
 | What happened, newest first | `log.md` |
 
-`state.md` is saved automatically by hooks before compaction and when a session ends. Run `/wrapup` at the end of real work to make the save deliberate.
+**Keep `state.md` current yourself, as you go.** When something finishes, a decision is made or the next step changes, update Done, Next and Open questions in the active project's `state.md` (no active project: `00-meta/state.md`). Do not wait for `/wrapup`. No hook writes this file: it is only as good as you keep it.
+
+Separately, hooks ask Claude for a four-line recap of each session (done, decided, open loops, next step) before compaction and when a session ends, and **append** it to `session-log/YYYY-MM.md` in the project (or `00-meta/session-log/`). That log is history, never instructions: entries are added at the bottom and never edited. A new session sees the last three.
 
 ## How to behave
 

@@ -5,7 +5,7 @@ updated: YYYY-MM-DD
 ---
 # State
 
-Where the work stands. You and Claude edit the sections below (`/wrapup` does it for you). The block at the bottom is written by hooks; do not edit it.
+Where the work stands. Claude keeps this current as the work moves (and `/wrapup` tidies it). No hook writes this file; the automatic recaps go to `session-log/`.
 
 ## Done
 - (nothing yet)

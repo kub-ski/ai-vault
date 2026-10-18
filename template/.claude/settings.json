@@ -8,6 +8,10 @@
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\"",
             "statusMessage": "Loading your vault memory..."
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/recap.sh\" sweep"
           }
         ]
       },
@@ -27,8 +31,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/save-state.sh\" precompact",
-            "statusMessage": "Saving your state before compacting..."
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/recap.sh\" precompact",
+            "statusMessage": "Starting a recap of this session..."
           }
         ]
       }
@@ -38,7 +42,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/save-state.sh\" sessionend"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/recap.sh\" sessionend"
           }
         ]
       }

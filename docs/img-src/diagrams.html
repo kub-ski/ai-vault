@@ -20,46 +20,46 @@ h2{margin:0 0 6px;font-size:30px}.sub{color:var(--mut);font-size:18px;margin:0 0
 <div class="row"><b>00-meta/</b><span>Working rules, naming, templates</span></div>
 <div class="row"><b>01-personal/</b><span>Who you are, how you like to work</span></div>
 <div class="row"><b>02-work/</b><span>Your work or business areas</span></div>
-<div class="row"><b>03-projects/</b><span>One folder per project, each with a state.md</span></div>
+<div class="row"><b>03-projects/</b><span>One folder per project: state.md + session-log/</span></div>
 <div class="row"><b>04-research/</b><span>What you looked into, with sources</span></div>
 <div class="row"><b>05-knowledge/</b><span>Reference notes that stay true</span></div>
 <div class="row raw"><b>06-sources/</b><span>Raw material. Never edited.</span></div>
 <div class="row"><b>99-archive/</b><span>Finished or retired. Move, never delete.</span></div>
-<div class="row mem" style="grid-column:1 / span 2"><b>.claude/</b><span>The memory machinery: hooks that save and load your state, plus the /kickoff, /wrapup and /new-project commands</span></div>
+<div class="row mem" style="grid-column:1 / span 2"><b>.claude/</b><span>Memory machinery: hooks that load your state and append recaps · /kickoff /wrapup /new-project</span></div>
 </div>
 </div>
 
 <div class="fig" id="loop">
 <h2>The memory loop</h2>
 <p class="sub">Nothing to remember to do. The hooks run by themselves.</p>
-<svg viewBox="0 0 1112 420" width="1112" height="420" role="img" aria-label="Memory loop: a session starts and the start hook loads your saved memory; you work; before compaction or at the end a hook saves a snapshot to state.md; the next session loads it again.">
+<svg viewBox="0 0 1112 420" width="1112" height="420" role="img" aria-label="Memory loop: a session starts and the start hook loads your saved memory and the last 3 recaps; you work and Claude keeps state.md current; before compaction or at the end Claude writes a recap that is added to session-log; the next session loads it again.">
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b45309"/></marker></defs>
 <g font-family="-apple-system,Helvetica Neue,Arial,sans-serif">
-<g><rect x="0" y="30" width="248" height="200" rx="16" fill="#fff" stroke="#d9cfbf" stroke-width="2"/>
+<g><rect x="0" y="30" width="248" height="226" rx="16" fill="#fff" stroke="#d9cfbf" stroke-width="2"/>
 <circle cx="32" cy="62" r="17" fill="#b45309"/><text x="32" y="68" text-anchor="middle" font-size="19" font-weight="700" fill="#fff">1</text>
 <text x="60" y="68" font-size="23" font-weight="700" fill="#1f2937">Start</text>
 <text x="20" y="108" font-size="17" fill="#5b6472">You open Claude in</text><text x="20" y="130" font-size="17" fill="#5b6472">your vault. A hook loads:</text>
-<text x="20" y="160" font-size="16" fill="#1f2937">· who you are + prefs</text><text x="20" y="182" font-size="16" fill="#1f2937">· newest decision</text><text x="20" y="204" font-size="16" fill="#1f2937">· project state.md</text></g>
-<g><rect x="288" y="30" width="248" height="200" rx="16" fill="#fff" stroke="#d9cfbf" stroke-width="2"/>
+<text x="20" y="160" font-size="16" fill="#1f2937">· who you are + prefs</text><text x="20" y="182" font-size="16" fill="#1f2937">· newest decision</text><text x="20" y="204" font-size="16" fill="#1f2937">· project state.md</text><text x="20" y="226" font-size="16" fill="#1f2937">· last 3 session recaps</text></g>
+<g><rect x="288" y="30" width="248" height="226" rx="16" fill="#fff" stroke="#d9cfbf" stroke-width="2"/>
 <circle cx="320" cy="62" r="17" fill="#b45309"/><text x="320" y="68" text-anchor="middle" font-size="19" font-weight="700" fill="#fff">2</text>
 <text x="348" y="68" font-size="23" font-weight="700" fill="#1f2937">Work</text>
 <text x="308" y="108" font-size="17" fill="#5b6472">Claude already knows</text><text x="308" y="130" font-size="17" fill="#5b6472">where you left off.</text>
-<text x="308" y="170" font-size="16" fill="#1f2937">/kickoff picks the</text><text x="308" y="192" font-size="16" fill="#1f2937">project to work on.</text></g>
-<g><rect x="576" y="30" width="248" height="200" rx="16" fill="#e8f3ea" stroke="#166534" stroke-width="2"/>
+<text x="308" y="166" font-size="16" fill="#1f2937">/kickoff picks the project.</text><text x="308" y="194" font-size="16" fill="#1f2937">Claude keeps state.md</text><text x="308" y="216" font-size="16" fill="#1f2937">current as work moves.</text></g>
+<g><rect x="576" y="30" width="248" height="226" rx="16" fill="#e8f3ea" stroke="#166534" stroke-width="2"/>
 <circle cx="608" cy="62" r="17" fill="#166534"/><text x="608" y="68" text-anchor="middle" font-size="19" font-weight="700" fill="#fff">3</text>
 <text x="636" y="68" font-size="23" font-weight="700" fill="#14532d">Save</text>
-<text x="596" y="108" font-size="17" fill="#14532d">A hook writes a snapshot</text><text x="596" y="130" font-size="17" fill="#14532d">into state.md:</text>
-<text x="596" y="160" font-size="16" fill="#14532d">· before a long chat is</text><text x="596" y="180" font-size="16" fill="#14532d">  compacted</text><text x="596" y="202" font-size="16" fill="#14532d">· when the session ends</text></g>
-<g><rect x="864" y="30" width="248" height="200" rx="16" fill="#fff" stroke="#d9cfbf" stroke-width="2"/>
+<text x="596" y="108" font-size="17" fill="#14532d">Claude writes a recap,</text><text x="596" y="130" font-size="17" fill="#14532d">added to session-log/:</text>
+<text x="596" y="160" font-size="16" fill="#14532d">· before a long chat is</text><text x="596" y="180" font-size="16" fill="#14532d">  compacted</text><text x="596" y="202" font-size="16" fill="#14532d">· when the session ends</text><text x="596" y="228" font-size="16" font-weight="600" fill="#14532d">Never rewritten.</text></g>
+<g><rect x="864" y="30" width="248" height="226" rx="16" fill="#fff" stroke="#d9cfbf" stroke-width="2"/>
 <circle cx="896" cy="62" r="17" fill="#b45309"/><text x="896" y="68" text-anchor="middle" font-size="19" font-weight="700" fill="#fff">4</text>
 <text x="924" y="68" font-size="23" font-weight="700" fill="#1f2937">Next session</text>
-<text x="884" y="108" font-size="17" fill="#5b6472">The start hook reads</text><text x="884" y="130" font-size="17" fill="#5b6472">the saved state.</text>
+<text x="884" y="108" font-size="17" fill="#5b6472">The start hook reads</text><text x="884" y="130" font-size="17" fill="#5b6472">state.md + recaps.</text>
 <text x="884" y="170" font-size="16" fill="#1f2937">Back to step 1,</text><text x="884" y="192" font-size="16" fill="#1f2937">with memory.</text></g>
 <path d="M250 130 L286 130" stroke="#b45309" stroke-width="3" marker-end="url(#ar)"/>
 <path d="M538 130 L574 130" stroke="#b45309" stroke-width="3" marker-end="url(#ar)"/>
 <path d="M826 130 L862 130" stroke="#b45309" stroke-width="3" marker-end="url(#ar)"/>
-<path d="M988 232 C988 330 124 330 124 234" fill="none" stroke="#b45309" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#ar)"/>
-<text x="556" y="322" text-anchor="middle" font-size="18" fill="#b45309" font-weight="600">the file on disk is the memory, not the chat</text>
-<text x="556" y="400" text-anchor="middle" font-size="17" fill="#5b6472">/wrapup at the end of real work makes step 3 deliberate: Done, Next, log.md, decision notes</text>
+<path d="M988 258 C988 350 124 350 124 260" fill="none" stroke="#b45309" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#ar)"/>
+<text x="556" y="368" text-anchor="middle" font-size="18" fill="#b45309" font-weight="600">the files on disk are the memory, not the chat</text>
+<text x="556" y="408" text-anchor="middle" font-size="17" fill="#5b6472">/wrapup at the end of real work tidies state.md and log.md and proposes decision notes</text>
 </g></svg>
 </div></body></html>

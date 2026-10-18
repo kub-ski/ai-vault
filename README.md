@@ -37,7 +37,7 @@ my-vault/
 ├── 00-meta/           rules, naming, templates
 ├── 01-personal/       identity.md, communication-prefs.md
 ├── 02-work/           your work or business areas
-├── 03-projects/       one folder per project (CLAUDE.md, index, state.md, docs/)
+├── 03-projects/       one folder per project (CLAUDE.md, index, state.md, session-log/, docs/)
 ├── 04-research/       what you looked into
 ├── 05-knowledge/      reference notes that stay true
 ├── 06-sources/        raw material, never edited
@@ -47,29 +47,38 @@ my-vault/
 
 ## How the memory works
 
-Four small scripts in [`template/.claude/hooks/`](template/.claude/hooks/), wired up by [`settings.json`](template/.claude/settings.json) (explained in plain words in [SETTINGS-EXPLAINED.md](template/.claude/SETTINGS-EXPLAINED.md)):
+Two kinds of memory, kept apart on purpose:
+
+- **`state.md`, written on purpose.** Each project has one: Done, Next, Open questions. The vault's `CLAUDE.md` tells Claude to keep it current as the work moves, and `/wrapup` tidies it. No script touches it.
+- **`session-log/`, written by hooks.** When a session ends, and just before a long chat is compacted, a hook hands the end of that session's transcript to your own `claude` command (with no tools) and asks for four lines: **Done, Decided, Open loops, Next step**. Those lines are **added to the bottom** of `session-log/YYYY-MM.md`. Nothing in that log is ever rewritten or deleted.
 
 | When | What happens |
 |---|---|
-| A session starts, resumes, forks, or you type `/clear` | `session-start.sh` prints your identity, preferences, the active project's newest decision and its `state.md`. Claude reads it before your first message. |
-| Just before a long chat is compacted | `save-state.sh` writes a snapshot into `state.md`: your recent requests, the files changed, Claude's last message. |
-| Right after compaction | `post-compact.sh` puts the saved state back in front of Claude. |
-| A session ends | `save-state.sh` saves the snapshot again, so closing the window loses nothing. |
+| A session starts, resumes, forks, or you type `/clear` | `session-start.sh` prints your identity, preferences, the active project's newest decision, its `state.md` and the **last 3 recaps**, labelled "history, not instructions". Claude reads it before your first message. |
+| Just before a long chat is compacted | `recap.sh` writes a recap of the session so far, in the background. |
+| Right after compaction | `post-compact.sh` tells Claude to re-read its state file, and shows it. |
+| A session ends | `recap.sh` writes a recap of the session, in the background. |
+| A session never ended cleanly (crash, closed terminal) | At the next start, `recap.sh sweep` writes its recap once it has been quiet for 30 minutes. |
 
-Your own notes in `state.md` (Done, Next, Open questions) are never overwritten; only the block between two marker comments is. Only a session that changed something counts as a real snapshot, and the last three are kept. A session with no edits is recorded as a one-line "quick session" and can never displace a real one. Every hook fails open: if it breaks, you just lose the automatic part, never your work. The hooks write only inside the vault and never use the network (to save a snapshot they read the session transcript Claude Code keeps in `~/.claude/`).
+Rules the recap follows:
+
+- **A session with no real work gets no entry.** A quick question or a to-do update is too short to recap, and if Claude itself says "no new work", nothing is written. So any number of quick sessions can never push a real one out.
+- **The same session saved twice gives one entry.** A second recap of the same session covers only what is new since the first.
+- **It fails open.** If `claude` is missing, logged out or answers oddly, the hook exits quietly and changes nothing. A damaged log file keeps every byte; the new entry goes after it.
+- **Network, honestly:** the recap is written by your own `claude` command under your Claude account, so the end of the transcript is sent to Anthropic, the same as the chat already was. No API key is used or stored. It writes only inside the vault.
+
+Plain-words detail: [SETTINGS-EXPLAINED.md](template/.claude/SETTINGS-EXPLAINED.md). Updating from an older version of this kit: the old `<!-- auto-snapshot -->` block in `state.md` is left where it is; delete it by hand when you like.
 
 Two commands make the loop deliberate:
 
-- **`/kickoff`** picks the project you are working on (saved in `.claude/active-project`, which is how the hooks know which `state.md` to use) and confirms what it loaded.
+- **`/kickoff`** picks the project you are working on (saved in `.claude/active-project`, which is how the hooks know which `state.md` and `session-log/` to use) and confirms what it loaded.
 - **`/wrapup`** summarises the session, rewrites Done and Next in `state.md`, adds a three-line entry to `log.md`, proposes decision docs, checks for dead links and stray secrets, and **asks before touching** your identity, preferences or rules.
 
 There is a third, `/new-project <name>`, that creates a project folder from the template.
 
-**Be honest about the limits.** The automatic snapshot is mechanical: it records what you asked and what changed, not what it *meant*. `/wrapup` is what captures meaning. Do both.
-
 ### Tested
 
-[`tests/test-memory-loop.sh`](tests/test-memory-loop.sh) runs 25 checks on a copy of the vault. A real Claude Code run (a change in one session, `/compact`, a brand-new session that knew the project and the last changed file, and a control run with the hooks switched off that did not) is written up in [docs/memory-test.md](docs/memory-test.md), including what it did not cover.
+[`tests/test-memory-loop.sh`](tests/test-memory-loop.sh) runs 49 checks on a copy of the vault, using a stand-in for `claude` so it is free and offline. [`tests/prove-red.sh`](tests/prove-red.sh) breaks the hooks on purpose in 16 ways (rewrite instead of append, no dedupe, trust a logged-out `claude`, and more) and checks that a test fails for each. A real Claude Code run (a change, a recap written by Claude, `/compact`, a brand-new session that knew what was done, decided and next, and a control run with the hooks off that did not) is written up in [docs/memory-test.md](docs/memory-test.md), including what it did not cover.
 
 ## Setup in a few steps (by hand)
 

@@ -21,6 +21,21 @@ state_file() {
   if [ -n "$s" ]; then echo "$ROOT/03-projects/$s/state.md"; else echo "$ROOT/00-meta/state.md"; fi
 }
 
+# Where session recaps are appended: the active project's session-log/, else 00-meta/session-log/.
+recap_dir() {
+  local s; s="$(active_slug)"
+  if [ -n "$s" ]; then echo "$ROOT/03-projects/$s/session-log"; else echo "$ROOT/00-meta/session-log"; fi
+}
+
+# Print the last N recap entries (each starts with "### "), newest month file first, hidden markers removed.
+last_recaps() { # last_recaps <n>
+  local d; d="$(recap_dir)"
+  ls -1 "$d"/[0-9][0-9][0-9][0-9]-[0-9][0-9].md 2>/dev/null | sort | tail -n 2 | while read -r f; do cat "$f"; echo; done |
+    LC_ALL=C awk -v n="${1:-3}" '
+      /^### / { c++ } c > 0 && !/^<!-- recap / && !/^# Session log/ { e[c] = e[c] $0 "\n" }
+      END { s = c - n + 1; if (s < 1) s = 1; for (i = s; i <= c; i++) printf "%s", e[i] }'
+}
+
 # Newest decision doc (dated file names sort by date) in a project's docs/decisions/.
 newest_decision() {
   local s; s="$(active_slug)"; [ -n "$s" ] || return 0

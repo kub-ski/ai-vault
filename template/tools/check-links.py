@@ -13,7 +13,7 @@ for dp, dn, fn in os.walk(ROOT):
         if not f.endswith(".md"): continue
         p = os.path.join(dp, f)
         if os.path.relpath(p, ROOT).startswith(os.path.join("00-meta", "templates")): continue  # templates hold placeholder links
-        text = re.sub(r"```.*?```", "", open(p, encoding="utf-8").read(), flags=re.S)
+        text = re.sub(r"```.*?```", "", open(p, encoding="utf-8", errors="replace").read(), flags=re.S)
         text = re.sub(r"`[^`\n]*`", "", text)
         for m in LINK.finditer(text):
             t = m.group(1)

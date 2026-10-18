@@ -6,7 +6,7 @@ End-of-session ritual. Be brief and concrete: file paths, no fluff.
 
 **1. Summary.** 5 to 8 bullets: what we did, what changed (paths), what was decided.
 
-**2. Update the state file.** Open the active project's `state.md` (the slug is in `.claude/active-project`; with no active project use `00-meta/state.md`). Rewrite the sections Done, Next, Open questions and "Branches, links, versions" so a stranger could resume from them. Set `updated:` to today. Do not touch the block between `<!-- auto-snapshot:start -->` and `<!-- auto-snapshot:end -->`; a hook writes it. You may edit `state.md` without asking: it exists for this.
+**2. Update the state file.** Open the active project's `state.md` (the slug is in `.claude/active-project`; with no active project use `00-meta/state.md`). Rewrite the sections Done, Next, Open questions and "Branches, links, versions" so a stranger could resume from them. Set `updated:` to today. You may edit `state.md` without asking: it exists for this. (If an old `<!-- auto-snapshot -->` block from an earlier version of the kit is still in it, ask the user before removing it.) Never edit `session-log/`: a hook appends Claude's recap there when the session ends.
 
 **3. Log.** Add a new entry at the top of `log.md` (below the intro), three lines at most:
 
