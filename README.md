@@ -56,7 +56,7 @@ Four small scripts in [`template/.claude/hooks/`](template/.claude/hooks/), wire
 | Right after compaction | `post-compact.sh` puts the saved state back in front of Claude. |
 | A session ends | `save-state.sh` saves the snapshot again, so closing the window loses nothing. |
 
-Your own notes in `state.md` (Done, Next, Open questions) are never overwritten; only the block between two marker comments is. It keeps the last snapshot too, and a quick one-question session does not replace the snapshot of a real working session. Every hook fails open: if it breaks, you just lose the automatic part, never your work. The hooks write only inside the vault and never use the network (to save a snapshot they read the session transcript Claude Code keeps in `~/.claude/`).
+Your own notes in `state.md` (Done, Next, Open questions) are never overwritten; only the block between two marker comments is. Only a session that changed something counts as a real snapshot, and the last three are kept. A session with no edits is recorded as a one-line "quick session" and can never displace a real one. Every hook fails open: if it breaks, you just lose the automatic part, never your work. The hooks write only inside the vault and never use the network (to save a snapshot they read the session transcript Claude Code keeps in `~/.claude/`).
 
 Two commands make the loop deliberate:
 
@@ -69,7 +69,7 @@ There is a third, `/new-project <name>`, that creates a project folder from the 
 
 ### Tested
 
-[`tests/test-memory-loop.sh`](tests/test-memory-loop.sh) runs 22 checks on a copy of the vault. A real Claude Code run (a change in one session, `/compact`, a brand-new session that knew the project and the last changed file, and a control run with the hooks switched off that did not) is written up in [docs/memory-test.md](docs/memory-test.md), including what it did not cover.
+[`tests/test-memory-loop.sh`](tests/test-memory-loop.sh) runs 25 checks on a copy of the vault. A real Claude Code run (a change in one session, `/compact`, a brand-new session that knew the project and the last changed file, and a control run with the hooks switched off that did not) is written up in [docs/memory-test.md](docs/memory-test.md), including what it did not cover.
 
 ## Setup in a few steps (by hand)
 

@@ -4,7 +4,7 @@ Run on 2026-10-18 with Claude Code on a fresh copy of the template (made by `scr
 
 ## 1. Scripted self-test (no AI involved)
 
-`bash tests/test-memory-loop.sh` → **22 passed, 0 failed** (19 at first run; 3 added after review). It fakes a finished session, runs the save hook the way PreCompact would, then runs the start hooks as a "new session" and checks the facts come back (request, changed file, last message, newest decision only, restored state after compaction, user notes never overwritten, garbage input harmless, links resolve). Building this check into the repo was the point: it caught one real bug while I wrote it (a SessionEnd with an unreadable transcript blanked a good snapshot; fixed).
+`bash tests/test-memory-loop.sh` → **25 passed, 0 failed** (19 at first run; 6 added after two review rounds). It fakes a finished session, runs the save hook the way PreCompact would, then runs the start hooks as a "new session" and checks the facts come back (request, changed file, last message, newest decision only, restored state after compaction, user notes never overwritten, garbage input harmless, links resolve). Building this check into the repo was the point: it caught one real bug while I wrote it (a SessionEnd with an unreadable transcript blanked a good snapshot; fixed).
 
 ## 2. Real Claude Code, end to end
 
@@ -29,3 +29,8 @@ Run on 2026-10-18 with Claude Code on a fresh copy of the template (made by `scr
 ## 3. Re-run after review (2026-10-18)
 
 An independent review found that a short question-only session replaced the snapshot of a real working session, that marker text in a request could corrupt `state.md`, and that stored text was not labelled as history. All three are fixed and now have checks (22 in total). Live re-run on a fresh install: session 1 created a file; session 2 ("What is 2+2?") ran and **did not** replace the snapshot; session 3, file tools blocked, answered "The last session changed `03-projects/example-project/docs/content/menu.md`, according to the auto-snapshot in `state.md`."
+
+## 4. Round 2: the case that still wiped the snapshot
+
+A real session (a request and an edit) followed by two no-edit sessions with two questions each still replaced the real snapshot. Fix: only a session that changed something (a Write, Edit or TodoWrite) counts as real; the last three real ones are kept; no-edit sessions become one-line "quick sessions". History is a small JSON file next to `state.md`, and a session saved twice (before compaction and at its end) is one entry.
+Red/green proof: the new check reproduces the case exactly. Against the previous hook (c6efedd) it fails; with the fix disabled by one line (`"real": True`) it fails (3 checks red); with the fix it passes (25/25).
