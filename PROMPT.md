@@ -16,7 +16,7 @@ I want an AI vault: a folder of notes my AI can read, with memory that saves and
 1. Clone https://github.com/kub-ski/ai-vault into ~/ai-vault-kit (if the folder exists, run `git pull` in it). Read README.md and PROMPT.md there.
 2. Ask me these questions, one at a time, and wait for each answer:
    a) What is your name, and what do you do (work, studies, a business)?
-   b) Which areas of work or life should get a folder? (for example: a shop, a class, my health, a side project). Two or three is enough; I can add more later.
+   b) Which areas of work or life should get a folder? (for example: a shop, a class, a hobby, a side project). Two or three is enough; I can add more later.
    c) Where should the vault live? (default: ~/my-vault. If I use iCloud Drive, put it in iCloud Drive/my-vault.)
    d) Do I use Obsidian? (yes/no. If yes, tell me to open the folder as a vault, and to turn off "Use [[Wikilinks]]".)
    e) Should I keep a git history of the vault? (yes/no, default yes. It stays on this computer.)
